@@ -18,12 +18,12 @@ impl HopcroftKarp {
         }
     }
 
-    pub fn get_maximum_matching(&mut self, graph_l2r: &Vec<Vec<usize>>) -> &Vec<Option<usize>> {
+    pub fn get_maximum_matching(&mut self, graph_l2r: &[Vec<usize>]) -> &Vec<Option<usize>> {
         self.run(graph_l2r);
         &self.matching_l2r
     }
 
-    fn run(&mut self, graph_l2r: &Vec<Vec<usize>>) -> usize {
+    fn run(&mut self, graph_l2r: &[Vec<usize>]) -> usize {
         let mut matchings = 0;
         while self.bfs(&graph_l2r) {
             for l in 0..graph_l2r.len() {
@@ -37,10 +37,10 @@ impl HopcroftKarp {
                 }
             }
         }
-        return matchings;
+        matchings
     }
 
-    fn bfs(&mut self, graph_l2r: &Vec<Vec<usize>>) -> bool {
+    fn bfs(&mut self, graph_l2r: &[Vec<usize>]) -> bool {
         let mut vertex_queue = LinkedList::new();
         for l in 0..graph_l2r.len() {
             match self.matching_l2r[l] {
@@ -84,7 +84,7 @@ impl HopcroftKarp {
         self.cur_d.is_some()
     }
 
-    fn dfs(&mut self, graph_l2r: &Vec<Vec<usize>>, l: usize) -> bool {
+    fn dfs(&mut self, graph_l2r: &[Vec<usize>], l: usize) -> bool {
         for r in graph_l2r[l].iter() {
             match self.matching_r2l[*r] {
                 None => {
@@ -94,11 +94,11 @@ impl HopcroftKarp {
                     }
                 }
                 Some(l2) => {
-                    if self.l2d[l2] == Some(self.l2d[l].unwrap_or(-1) + 1) {
-                        if self.dfs(graph_l2r, l2) {
-                            self.update_match(l, *r);
-                            return true;
-                        }
+                    if self.l2d[l2] == Some(self.l2d[l].unwrap_or(-1) + 1)
+                        && self.dfs(graph_l2r, l2)
+                    {
+                        self.update_match(l, *r);
+                        return true;
                     }
                 }
             }
